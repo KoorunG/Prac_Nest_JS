@@ -1,6 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { BoardStatus } from './board.status';
-import {v1 as uuid} from 'uuid';
+import { Injectable } from '@nestjs/common';
 import { CreateBoardDto } from './dto/createBoard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardRepository } from './board.repository';
@@ -60,29 +58,12 @@ export class BoardService {
   ){}
 
   // 1. 특정 게시글 조회
-  async getBoardById(id : number) : Promise<Board> {
-    const found = await this.boardRepository.findOne(id);
-
-    if(!found) {
-      throw new NotFoundException(`Can't find Board with id : ${id}`);
-    }
-    
-    return found;
+  getBoardById(id : number) : Promise<Board> {
+    return this.boardRepository.getBoardById(id);
   }
 
   // 2. 게시글 생성
-  async createBoard(createBoardDto : CreateBoardDto) : Promise<Board> {
-    const {title, description} = createBoardDto;
-
-    // 2-1. create()로 객체를 생성한 뒤
-    const board = this.boardRepository.create({
-      title,
-      description,
-      status : BoardStatus.PUBLIC
-    });
-    
-    // 2-2. save()로 DB에 값을 저장한다!
-    await this.boardRepository.save(board);
-    return board;
+  createBoard(createBoardDto : CreateBoardDto) : Promise<Board> {
+    return this.boardRepository.createBoard(createBoardDto);
   }
 }
