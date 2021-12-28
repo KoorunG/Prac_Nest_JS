@@ -50,4 +50,21 @@ export class BoardController {
   createBoard(@Body() createBoardDto : CreateBoardDto) : Promise<Board> {
     return this.boardService.createBoard(createBoardDto);
   }
+
+  @Delete('/:id')
+  deleteBoard(@Param('id', ParseIntPipe) id : number) : Promise<void> {
+    return this.boardService.deleteBoard(id);
+  }
+
+  @Patch('/:id/status')
+  updateBoardStatus(
+    @Param('id', ParseIntPipe) id : number, 
+    @Body('status', BoardStatusValidationPipe) status : BoardStatus) : Promise<Board> {
+    return this.boardService.updateBoardStatus(id, status);
+  }
+
+  @Get('/')
+  getAllBoards() : Promise<Board[]> {
+    return this.boardService.getAllBoards();
+  }
 }

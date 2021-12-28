@@ -33,4 +33,30 @@ export class BoardRepository extends Repository<Board> {
     await this.save(board);
     return board;
   }
+
+
+  // 3. 게시글 삭제
+  async deleteBoard(id : number) : Promise<void> {
+    const result = await this.delete(id);
+    console.log(result);
+    
+  }
+
+  
+  // 4. 게시글 수정
+  async updateBoardStatus(id : number, status : BoardStatus) : Promise<Board> {
+
+    const board = await this.getBoardById(id);  // 1. id로 수정할 게시글을 불러옴
+    
+    board.status = status;                      // 2. 파라미터로 입력받은 status로 board의 상태를 업데이트함
+    await this.save(board);                     // 3. DB에 저장함
+
+    return board;                               // 4. 리턴
+  }
+
+  // 5. 모든 게시물 조회
+  async getAllBoards() : Promise<Board[]> {
+    const boards = await this.find();
+    return boards;
+  }
 }

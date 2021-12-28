@@ -3,6 +3,7 @@ import { CreateBoardDto } from './dto/createBoard.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardRepository } from './board.repository';
 import { Board } from './board.entity';
+import { BoardStatus } from './board.status';
 
 @Injectable()
 export class BoardService {
@@ -65,5 +66,21 @@ export class BoardService {
   // 2. 게시글 생성
   createBoard(createBoardDto : CreateBoardDto) : Promise<Board> {
     return this.boardRepository.createBoard(createBoardDto);
+  }
+
+  // 3. 게시글 삭제
+  deleteBoard(id : number) : Promise<void>{
+    const result = this.boardRepository.deleteBoard(id);
+    return result;
+  }
+
+  // 4. 게시글 수정
+  updateBoardStatus(id : number, status : BoardStatus) : Promise<Board> {
+    return this.boardRepository.updateBoardStatus(id, status);
+  }
+
+  // 5. 모든 게시글 조회
+  getAllBoards() : Promise<Board[]> {
+    return this.boardRepository.getAllBoards();
   }
 }
