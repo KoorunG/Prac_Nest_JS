@@ -1,4 +1,5 @@
 import { NotFoundException } from "@nestjs/common";
+import { User } from "src/auth/user.entity";
 import { EntityRepository, Repository } from "typeorm";
 import { Board } from "./board.entity";
 import { BoardStatus } from "./board.status";
@@ -19,14 +20,15 @@ export class BoardRepository extends Repository<Board> {
   }
 
   // 2. 게시글 생성
-  async createBoard(createBoardDto : CreateBoardDto) : Promise<Board> {
+  async createBoard(createBoardDto : CreateBoardDto, user : User) : Promise<Board> {
     const {title, description} = createBoardDto;
 
     // 2-1. create()로 객체를 생성한 뒤
     const board = this.create({
       title,
       description,
-      status : BoardStatus.PUBLIC
+      status : BoardStatus.PUBLIC,
+      user
     });
     
     // 2-2. save()로 DB에 값을 저장한다!
@@ -36,8 +38,13 @@ export class BoardRepository extends Repository<Board> {
 
 
   // 3. 게시글 삭제
-  async deleteBoard(id : number) : Promise<void> {
-    const result = await this.delete(id);
+  async deleteBoard(id : number, user : User) : Promise<void> {
+    const result = await this.delete({ id, user });
+
+    if(result.affected === 0){
+      throw new NotFoundException(`Can't find Board with id : ${id}`);
+    }
+    
     console.log(result);
     
   }
@@ -55,8 +62,12 @@ export class BoardRepository extends Repository<Board> {
   }
 
   // 5. 모든 게시물 조회
-  async getAllBoards() : Promise<Board[]> {
-    const boards = await this.find();
+  async getAllBoards(user : User) : Promise<Board[]> {
+    // const boards = await this.find();
+
+    const query = this.createQueryBuilder('board');
+    query.where('board.userId =:userId', { userId : user.id });
+    const boards = await query.getMany();
     return boards;
   }
 }

@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BoardRepository } from './board.repository';
 import { Board } from './board.entity';
 import { BoardStatus } from './board.status';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class BoardService {
@@ -64,13 +65,13 @@ export class BoardService {
   }
 
   // 2. 게시글 생성
-  createBoard(createBoardDto : CreateBoardDto) : Promise<Board> {
-    return this.boardRepository.createBoard(createBoardDto);
+  createBoard(createBoardDto : CreateBoardDto, user : User) : Promise<Board> {
+    return this.boardRepository.createBoard(createBoardDto, user);
   }
 
   // 3. 게시글 삭제
-  deleteBoard(id : number) : Promise<void>{
-    const result = this.boardRepository.deleteBoard(id);
+  deleteBoard(id : number, user : User) : Promise<void>{
+    const result = this.boardRepository.deleteBoard(id, user);
     return result;
   }
 
@@ -80,7 +81,7 @@ export class BoardService {
   }
 
   // 5. 모든 게시글 조회
-  getAllBoards() : Promise<Board[]> {
-    return this.boardRepository.getAllBoards();
+  getAllBoards(user : User) : Promise<Board[]> {
+    return this.boardRepository.getAllBoards(user);
   }
 }
