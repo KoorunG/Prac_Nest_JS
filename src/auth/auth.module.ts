@@ -6,15 +6,17 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UserRepository } from './user.repository';
+import * as config from 'config';
 
+const jwtConfig : { secret, expiresIn }= config.get('jwt');
 @Module({
   imports : [
     TypeOrmModule.forFeature([UserRepository]),           // 1. TypeOrmModule 등록
     // UserRepository를 다른 곳에서도 사용하기 위해 imports
     JwtModule.register({                                  // 2. JwtModule 등록
-      secret : "Secret1234",      // JWT의 Secret을 입력하는 부분
+      secret : process.env.JWT_SECRET || jwtConfig.secret,      // JWT의 Secret을 입력하는 부분
       signOptions : {             // 토큰의 만료시간, 알고리즘, 인코딩 등을 설정할 수 있는 옵션
-        expiresIn : 60 * 60,       
+        expiresIn : jwtConfig.expiresIn,       
       }
     }),
    PassportModule.register({defaultStrategy : 'jwt'})     // 3. PassportModule 등록 
